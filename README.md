@@ -7,10 +7,9 @@ I had some struggles with the examples from manufacturer so i must make some cha
 Preparation : Install Visual Studio Code , install inside VS the Platformio Plugin and PioArduino. Restart VS , open folder with this code. 
 Let Platformio/Pioarduino some time to install all required software . 
 
-1.) Copy lv_conf.h to root of lvgl Library source directory when its downloaded. When using Platform IO lvgl is installed during build process. 
+Copy lv_conf.h to root of lvgl Library source directory when its downloaded. When using Platform IO lvgl is installed during build process. 
 You will see errors. Copy the the lv_conf.h the to lvgl Directory in $(BUILD_DIR)/.pio/libdeps/esp32-p4/lvgl  
-2.) Arduino User must rename rex_jc8012.cpp to rex_jc8012.ino
-3.) HAve Fun , implemented is a small Onscreen Keyboard for testing 
+HAve Fun , implemented is a small Onscreen Keyboard for testing 
 
 Greetz, Achim
 
