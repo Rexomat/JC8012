@@ -378,34 +378,6 @@ void rex_lvgl_init(void)
 {
      bsp_display_brightness_init();
     esp_err_t esp_ret;
-    /*i2c_master_bus_config_t i2c_bus_conf = {
-        .i2c_port = LVGL_IC_NUM,        
-        .sda_io_num = BSP_I2C_SDA,
-        .scl_io_num = BSP_I2C_SCL,
-        .clk_source = I2C_CLK_SRC_DEFAULT,        
-    };
-    i2c_new_master_bus(&i2c_bus_conf, &i2c_handle);*/
-
-    i2c_master_bus_config_t i2c_bus_conf = {
-        .i2c_port = LVGL_IC_NUM,
-        .sda_io_num = BSP_I2C_SDA,
-        .scl_io_num = BSP_I2C_SCL,
-        .clk_source = I2C_CLK_SRC_DEFAULT,
-//        .glitch_ignore_cnt = 7,
-        //.intr_priority = 0,
-        //.trans_queue_depth = -1,
-        .flags = {
-            .enable_internal_pullup = true,
-            .allow_pd = 1 ,
-        }
-    };
-    // Initialize the I2C bus
-    esp_ret = i2c_new_master_bus(&i2c_bus_conf, &i2c_handle);
-    if (esp_ret != ESP_OK) {
-        printf("Error: Failed to initialize I2C bus\r\n");
-        abort();
-    }
-        
     // LEDC Setup
     static esp_ldo_channel_handle_t phy_pwr_chan = NULL;
     esp_ldo_channel_config_t ldo_cfg = {
@@ -462,7 +434,34 @@ void rex_lvgl_init(void)
 /////////////// ENDE DISPLAY
 ////// STARt TOUCH , I2C Init am Anfang der Funktion
  //   gsltouch.begin();    // Use this if the Class funktion is used. Not tested
- 
+    if(i2c_handle == NULL)  // Check if handle is already used or create new, prepare to share I2C Bus
+    {
+        // Initialize the I2C bus
+        i2c_master_bus_config_t i2c_bus_conf = {
+            .i2c_port = LVGL_IC_NUM,
+            .sda_io_num = BSP_I2C_SDA,
+            .scl_io_num = BSP_I2C_SCL,
+            .clk_source = I2C_CLK_SRC_DEFAULT,
+            .flags = {
+                .enable_internal_pullup = true,
+                .allow_pd = 1 ,
+            }
+        };
+        
+        i2c_new_master_bus(&i2c_bus_conf, &i2c_handle);
+        if (esp_ret != ESP_OK) {
+            printf("Error: Failed to initialize I2C bus\r\n");
+                //Do whatever you want or ignore
+        }     
+    }
+     
+    i2c_device_config_t confi;
+    i2c_master_dev_handle_t reti;
+    confi.device_address=0x40;
+    confi.scl_speed_hz=400000;
+    i2c_master_bus_add_device(i2c_handle,&confi,&i2c_dev_handle);
+    ESP_LOGE(TAG,"TOUCH device added to I2c Bus");
+    
     my_tp_io_handle = NULL;
     esp_lcd_panel_io_i2c_config_t tp_io_config = ESP_LCD_TOUCH_IO_I2C_GSL3680_CONFIG();
     tp_io_config.scl_speed_hz =400000;
